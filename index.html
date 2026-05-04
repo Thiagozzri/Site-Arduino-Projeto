@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArduPedia | Desmistificando o Hardware</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#00979D',
+                            hover: '#008489',
+                            tint: 'rgba(0, 151, 157, 0.1)'
+                        },
+                        pcb: {
+                            base: '#0B1120',
+                            trace: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050810;
+            color: #ffffff;
+        }
+
+        ::selection {
+            background-color: #00979D;
+            color: #ffffff;
+        }
+
+        /* Utilitários 3D para os Cards de Curiosidade */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Animação de entrada das páginas */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* Pattern de fundo estilo PCB */
+        .bg-pcb-pattern {
+            background-image: radial-gradient(#00979D 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Estilização da scrollbar para combinar com o tema */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050810;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00979D;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased min-h-screen flex flex-col">
+
+    <header class="border-b border-pcb-trace bg-pcb-base sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
+                <div class="w-8 h-8 rounded-full border-2 border-primary flex items-center justify-center">
+                    <div class="w-3 h-3 bg-primary rounded-full"></div>
+                </div>
+                <span class="text-2xl font-bold tracking-tight">Ardu<span class="text-primary">Pedia</span></span>
+            </div>
+
+            <nav class="flex gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0" id="main-nav">
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12 flex-grow w-full">
+
+        <section id="page-home" class="page-section animate-fade-in space-y-12">
+            <div class="relative border border-primary bg-primary-tint rounded-xl p-12 text-center overflow-hidden">
+                <div class="absolute inset-0 opacity-20 bg-pcb-pattern pointer-events-none"></div>
+                <h1 class="text-5xl font-bold mb-4 relative z-10">Desmistificando o Hardware</h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto font-mono relative z-10">
+                    1 Bilhão+ de placas vendidas. O ecossistema Arduino transformou o movimento maker.
+                    Explore especificações técnicas, pinouts e curiosidades da plataforma de prototipagem.
+                </p>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-bold mb-6 border-b border-pcb-trace pb-2">Curiosidades Técnicas</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="facts-container">
+                </div>
+            </div>
+        </section>
+
+        <section id="page-boards" class="page-section hidden animate-fade-in space-y-8">
+            <h2 class="text-3xl font-bold border-b border-primary pb-2 inline-block">Placas & Microcontroladores</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="boards-container">
+            </div>
+        </section>
+
+        <section id="page-components" class="page-section hidden animate-fade-in space-y-8">
+            <h2 class="text-3xl font-bold border-b border-primary pb-2 inline-block">Componentes & Programação</h2>
+
+            <div class="bg-pcb-base border border-pcb-trace rounded-lg p-6">
+                <h3 class="text-xl font-bold text-primary mb-4">O problema do delay()</h3>
+                <p class="text-slate-300 mb-4 text-sm">
+                    Iniciantes frequentemente usam a função <code
+                        class="text-primary font-mono bg-slate-800 px-1 rounded">delay()</code>.
+                    O problema é que essa função pausa completamente o processador (busy-wait). Para projetos reais,
+                    utilizamos a função
+                    <code class="text-primary font-mono bg-slate-800 px-1 rounded">millis()</code>, que retorna o número
+                    de milissegundos
+                    desde que a placa foi ligada, permitindo multitarefa cooperativa.
+                </p>
+
+                <div class="rounded-lg overflow-hidden border border-pcb-trace bg-[#050810] my-4">
+                    <div class="flex justify-between items-center bg-slate-900 px-4 py-2 border-b border-pcb-trace">
+                        <span class="text-slate-400 font-mono text-xs">blink_without_delay.ino</span>
+                        <button onclick="copyCode()"
+                            class="text-primary font-mono text-xs hover:text-white transition-colors"
+                            id="btn-copy">Copiar</button>
+                    </div>
+                    <pre class="p-4 overflow-x-auto text-sm font-mono text-slate-300"><code id="code-content">// Prática recomendada: Evitar delay()
+const int ledPin = 13; 
+unsigned long previousMillis = 0; 
+const long interval = 1000; // 1 segundo
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+
+  // Verifica se o tempo decorrido atingiu o intervalo
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis; 
+    
+    // Inverte o estado do pino
+    digitalWrite(ledPin, !digitalRead(ledPin));
+  }
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-pcb-base border border-pcb-trace rounded-lg p-6 hover:border-primary transition-colors">
+                    <h4 class="font-bold text-white mb-2">Protocolo I2C</h4>
+                    <p class="text-sm text-slate-400 mb-2">Comunicação síncrona de 2 fios (SDA + SCL).</p>
+                    <ul class="text-sm text-slate-300 list-disc list-inside space-y-1 marker:text-primary">
+                        <li>Endereçamento de 7 ou 10 bits.</li>
+                        <li>Velocidade padrão: 100kHz / Rápido: 400kHz.</li>
+                        <li>Requer resistores de pull-up nas linhas.</li>
+                    </ul>
+                </div>
+                <div class="bg-pcb-base border border-pcb-trace rounded-lg p-6 hover:border-primary transition-colors">
+                    <h4 class="font-bold text-white mb-2">Pinos PWM</h4>
+                    <p class="text-sm text-slate-400 mb-2">Pulse Width Modulation (Modulação por Largura de Pulso).</p>
+                    <ul class="text-sm text-slate-300 list-disc list-inside space-y-1 marker:text-primary">
+                        <li>Simula saídas analógicas variando o duty cycle.</li>
+                        <li>Frequência base no Uno: ~490 Hz.</li>
+                        <li>Uso: <code class="text-primary font-mono">analogWrite(pin, 0-255)</code></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-compare" class="page-section hidden animate-fade-in space-y-8">
+            <h2 class="text-3xl font-bold border-b border-primary pb-2 inline-block">Comparativo Geral</h2>
+            <div class="overflow-x-auto border border-pcb-trace rounded-lg">
+                <table class="w-full text-left border-collapse whitespace-nowrap">
+                    <thead>
+                        <tr class="bg-slate-900 text-white font-mono text-sm">
+                            <th class="p-4 border-b border-pcb-trace">Modelo</th>
+                            <th class="p-4 border-b border-pcb-trace">MCU</th>
+                            <th class="p-4 border-b border-pcb-trace">Clock</th>
+                            <th class="p-4 border-b border-pcb-trace">Flash / SRAM</th>
+                            <th class="p-4 border-b border-pcb-trace">Pinos (Dig/Ana)</th>
+                            <th class="p-4 border-b border-pcb-trace">Tensão</th>
+                        </tr>
+                    </thead>
+                    <tbody id="compare-tbody" class="bg-pcb-base text-slate-300 text-sm font-mono">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-pcb-trace bg-pcb-base py-8 text-center mt-auto">
+        <p class="text-slate-500 font-mono text-xs sm:text-sm px-4">
+            Desenvolvido com HTML, JS e Tailwind CSS.<br />
+            Cor Primária: <span class="text-primary">#00979D</span> | Focado em Hardware de Baixo Nível.
+        </p>
+    </footer>
+
+    <script>
+        // --- 1. DADOS ESTÁTICOS ---
+        const BOARDS = [
+            {
+                id: "uno", name: "Arduino Uno R3", mcu: "ATmega328P", clock: "16 MHz", flash: "32 KB", sram: "2 KB",
+                digitalPins: 14, analogPins: 6, voltage: "5V", level: "Iniciante",
+                desc: "A placa de entrada mais popular do mundo. Ideal para aprender C++ e eletrônica básica."
+            },
+            {
+                id: "mega", name: "Arduino Mega 2560", mcu: "ATmega2560", clock: "16 MHz", flash: "256 KB", sram: "8 KB",
+                digitalPins: 54, analogPins: 16, voltage: "5V", level: "Intermediário",
+                desc: "Ideal para projetos com muitos pinos, impressoras 3D e necessidade de maior memória."
+            },
+            {
+                id: "nano33", name: "Nano 33 BLE Sense", mcu: "nRF52840", clock: "64 MHz", flash: "1 MB", sram: "256 KB",
+                digitalPins: 14, analogPins: 8, voltage: "3.3V", level: "Avançado",
+                desc: "Focada em Edge AI (Machine Learning na borda) com IMU, microfone e sensores ambientais."
+            }
+        ];
+
+        const FUN_FACTS = [
+            { q: "Origem do Nome?", a: "Homenagem ao 'Bar di Re Arduino' em Ivrea, Itália, onde os criadores se reuniam em 2005." },
+            { q: "O som do HC-SR04?", a: "Emite pulsos a 40kHz, uma frequência ultrassônica inaudível para humanos, mas que cães escutam." },
+            { q: "Velocidade do Uno?", a: "A 16MHz, o ATmega328P executa a maioria das instruções em apenas 1 ciclo de clock (62.5ns)." }
+        ];
+
+        const ROUTES = [
+            { id: 'home', label: 'Home' },
+            { id: 'boards', label: 'Placas' },
+            { id: 'components', label: 'Componentes' },
+            { id: 'compare', label: 'Comparativo' }
+        ];
+
+        let currentRoute = 'home';
+
+        // --- 2. FUNÇÕES DE RENDERIZAÇÃO E NAVEGAÇÃO ---
+
+        function init() {
+            renderNav();
+            renderFacts();
+            renderBoards();
+            renderCompareTable();
+            navigate('home');
+        }
+
+        function renderNav() {
+            const nav = document.getElementById('main-nav');
+            nav.innerHTML = ROUTES.map(r => `
+        <button 
+          id="btn-nav-${r.id}"
+          onclick="navigate('${r.id}')"
+          class="px-4 py-2 font-mono text-sm rounded transition-all duration-200 border border-primary text-primary hover:bg-primary-tint"
+        >
+          ${r.label}
+        </button>
+      `).join('');
+        }
+
+        function navigate(pageId) {
+            currentRoute = pageId;
+
+            // Oculta todas as seções
+            document.querySelectorAll('.page-section').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('animate-fade-in');
+            });
+
+            // Mostra a seção atual com animação
+            const activeSection = document.getElementById(`page-${pageId}`);
+            activeSection.classList.remove('hidden');
+            // Força reflow para re-engatilhar animação
+            void activeSection.offsetWidth;
+            activeSection.classList.add('animate-fade-in');
+
+            // Atualiza visual dos botões
+            ROUTES.forEach(r => {
+                const btn = document.getElementById(`btn-nav-${r.id}`);
+                if (r.id === pageId) {
+                    btn.className = "px-4 py-2 font-mono text-sm rounded transition-all duration-200 bg-primary text-white shadow-[0_0_10px_#00979D]";
+                } else {
+                    btn.className = "px-4 py-2 font-mono text-sm rounded transition-all duration-200 border border-primary text-primary hover:bg-primary-tint bg-transparent";
+                }
+            });
+        }
+
+        // Renderiza Cards 3D
+        function renderFacts() {
+            const container = document.getElementById('facts-container');
+            container.innerHTML = FUN_FACTS.map((fact, i) => `
+        <div class="relative w-full h-48 cursor-pointer perspective-1000" onclick="this.firstElementChild.classList.toggle('rotate-y-180')">
+          <div class="w-full h-full transition-transform duration-500 preserve-3d">
+            <div class="absolute w-full h-full backface-hidden bg-pcb-base border border-primary rounded-lg p-6 flex flex-col items-center justify-center text-center">
+              <span class="text-primary text-3xl mb-2">?</span>
+              <h3 class="font-sans font-bold text-white">Você Sabia?</h3>
+            </div>
+            <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-primary rounded-lg p-6 flex items-center justify-center text-center">
+              <p class="font-mono text-sm text-white">${fact.a}</p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        // Renderiza Lista de Placas
+        function renderBoards() {
+            const container = document.getElementById('boards-container');
+            container.innerHTML = BOARDS.map(b => {
+                const voltBadge = b.voltage === '5V'
+                    ? '<span class="px-2 py-1 rounded bg-red-900/50 text-red-400">5V</span>'
+                    : '<span class="px-2 py-1 rounded bg-blue-900/50 text-blue-400">3.3V</span>';
+
+                return `
+        <div class="bg-pcb-base border border-pcb-trace rounded-lg p-6 hover:border-primary transition-colors">
+          <div class="flex justify-between items-start mb-2">
+            <h3 class="text-2xl font-bold text-primary">${b.name}</h3>
+            <span class="px-2 py-1 bg-slate-800 text-slate-300 text-xs rounded font-mono">${b.level}</span>
+          </div>
+          <p class="text-slate-400 text-sm mb-4 h-10">${b.desc}</p>
+          
+          <table class="w-full text-left text-sm font-mono text-slate-300 mb-4">
+            <tbody>
+              <tr class="border-b border-slate-800/50"><th class="py-2">MCU</th><td>${b.mcu}</td></tr>
+              <tr class="border-b border-slate-800/50"><th class="py-2">Clock</th><td>${b.clock}</td></tr>
+              <tr class="border-b border-slate-800/50"><th class="py-2">Memória</th><td>${b.flash} Flash / ${b.sram} RAM</td></tr>
+              <tr class="border-b border-slate-800/50"><th class="py-2">Pinos</th><td>${b.digitalPins} Dig / ${b.analogPins} Ana</td></tr>
+              <tr><th class="py-2">Tensão</th><td>${voltBadge}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      `}).join('');
+        }
+
+        // Renderiza Tabela Comparativa
+        function renderCompareTable() {
+            const tbody = document.getElementById('compare-tbody');
+            tbody.innerHTML = BOARDS.map(b => `
+        <tr class="hover:bg-primary-tint transition-colors border-b border-pcb-trace last:border-0">
+          <td class="p-4 font-bold text-primary">${b.name}</td>
+          <td class="p-4">${b.mcu}</td>
+          <td class="p-4">${b.clock}</td>
+          <td class="p-4">${b.flash} / ${b.sram}</td>
+          <td class="p-4">${b.digitalPins} / ${b.analogPins}</td>
+          <td class="p-4">${b.voltage}</td>
+        </tr>
+      `).join('');
+        }
+
+        // --- 3. INTERATIVIDADE ---
+        function copyCode() {
+            const code = document.getElementById('code-content').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.getElementById('btn-copy');
+                btn.innerText = 'Copiado!';
+                setTimeout(() => btn.innerText = 'Copiar', 2000);
+            });
+        }
+
+        // Inicializa a aplicação ao carregar a página
+        window.onload = init;
+
+    </script>
+</body>
+
+</html>
