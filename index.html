@@ -332,62 +332,110 @@
 
         const PROJECTS = [
             {
-                title: "Piscar LED sem travar a placa (Blink Without Delay)",
-                desc: "Iniciantes usam delay(), que pausa o processador. Para projetos reais, usamos millis() para multitarefa.",
-                filename: "blink_sem_delay.ino",
-                code: `<span class="com">// Prática recomendada: Evitar delay() usando millis()</span>
-<span class="kw">const int</span> ledPin = <span class="num">13</span>; 
-<span class="kw">unsigned long</span> previousMillis = <span class="num">0</span>; 
-<span class="kw">const long</span> interval = <span class="num">1000</span>; <span class="com">// 1 segundo</span>
+                title: "Piscar Alternado (2 a 2)",
+                desc: "Este projeto faz com que quatro LEDs pisquem alternadamente em pares (LEDs 1 e 3 alternando com LEDs 2 e 4) a cada 1 segundo.",
+                filename: "piscar_alternado.ino",
+                code: `<span class="kw">int</span> led1 = A1;
+<span class="kw">int</span> led2 = A2;
+<span class="kw">int</span> led3 = A3;
+<span class="kw">int</span> led4 = A4;
 
 <span class="kw">void</span> <span class="fn">setup</span>() {
-  <span class="fn">pinMode</span>(ledPin, OUTPUT);
+  <span class="fn">pinMode</span>(led1, OUTPUT);
+  <span class="fn">pinMode</span>(led2, OUTPUT);
+  <span class="fn">pinMode</span>(led3, OUTPUT);
+  <span class="fn">pinMode</span>(led4, OUTPUT);
+ 
+  <span class="fn">digitalWrite</span>(led1, HIGH);
+  <span class="fn">digitalWrite</span>(led2, LOW);
+  <span class="fn">digitalWrite</span>(led3, HIGH);
+  <span class="fn">digitalWrite</span>(led4, LOW);
+  <span class="fn">delay</span>(<span class="num">3000</span>);
 }
 
 <span class="kw">void</span> <span class="fn">loop</span>() {
-  <span class="kw">unsigned long</span> currentMillis = <span class="fn">millis</span>();
-
-  <span class="com">// Verifica se o tempo decorrido atingiu o intervalo</span>
-  <span class="kw">if</span> (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis; 
-    
-    <span class="com">// Inverte o estado do pino</span>
-    <span class="fn">digitalWrite</span>(ledPin, !<span class="fn">digitalRead</span>(ledPin));
-  }
+  <span class="fn">digitalWrite</span>(led1, LOW);
+  <span class="fn">digitalWrite</span>(led2, HIGH);
+  <span class="fn">digitalWrite</span>(led3, LOW);
+  <span class="fn">digitalWrite</span>(led4, HIGH);
+  <span class="fn">delay</span>(<span class="num">1000</span>);
+  <span class="fn">digitalWrite</span>(led1, HIGH);
+  <span class="fn">digitalWrite</span>(led2, LOW);
+  <span class="fn">digitalWrite</span>(led3, HIGH);
+  <span class="fn">digitalWrite</span>(led4, LOW);
+  <span class="fn">delay</span>(<span class="num">1000</span>);
 }`
             },
             {
-                title: "Leitura de Sensor de Temperatura DHT11",
-                desc: "Exemplo básico de como ler dados de um sensor externo utilizando uma biblioteca específica.",
-                filename: "leitura_dht.ino",
-                code: `<span class="kw">#include</span> <span class="str">&lt;DHT.h&gt;</span>
-
-<span class="kw">#define</span> DHTPIN <span class="num">2</span>     <span class="com">// Pino digital conectado ao sensor</span>
-<span class="kw">#define</span> DHTTYPE DHT11 <span class="com">// Definindo o modelo do sensor</span>
-
-<span class="type">DHT</span> dht(DHTPIN, DHTTYPE);
+                title: "Semáforo Simples / Alternância de Estados",
+                desc: "Após uma inicialização de 3 segundos, este código alterna o estado de dois LEDs centrais a cada 3 segundos, mantendo os da ponta em estados fixos.",
+                filename: "semaforo_simples.ino",
+                code: `<span class="kw">int</span> led1 = A1;
+<span class="kw">int</span> led2 = A2;
+<span class="kw">int</span> led3 = A3;
+<span class="kw">int</span> led4 = A4;
 
 <span class="kw">void</span> <span class="fn">setup</span>() {
-  <span class="type">Serial</span>.<span class="fn">begin</span>(<span class="num">9600</span>);
-  dht.<span class="fn">begin</span>();
+  <span class="fn">pinMode</span>(led1, OUTPUT);
+  <span class="fn">pinMode</span>(led2, OUTPUT);
+  <span class="fn">pinMode</span>(led3, OUTPUT);
+  <span class="fn">pinMode</span>(led4, OUTPUT);
+ 
+  <span class="fn">digitalWrite</span>(led1, HIGH);
+  <span class="fn">digitalWrite</span>(led2, HIGH);
+  <span class="fn">digitalWrite</span>(led3, LOW);
+  <span class="fn">digitalWrite</span>(led4, LOW);
+  <span class="fn">delay</span>(<span class="num">3000</span>);
 }
 
 <span class="kw">void</span> <span class="fn">loop</span>() {
-  <span class="fn">delay</span>(<span class="num">2000</span>); <span class="com">// DHT11 precisa de ~2s entre leituras</span>
+  <span class="fn">digitalWrite</span>(led2, LOW);
+  <span class="fn">digitalWrite</span>(led3, HIGH);
+  <span class="fn">delay</span>(<span class="num">3000</span>);
+  <span class="fn">digitalWrite</span>(led2, HIGH);
+  <span class="fn">digitalWrite</span>(led3, LOW);
+  <span class="fn">delay</span>(<span class="num">3000</span>);
+}`
+            },
+            {
+                title: "Efeito Cascata Lenta",
+                desc: "Cria um efeito sequencial onde cada LED tem seu estado invertido um a um a cada meio segundo, gerando um padrão de movimento.",
+                filename: "cascata_lenta.ino",
+                code: `<span class="kw">int</span> led1 = A1;
+<span class="kw">int</span> led2 = A2;
+<span class="kw">int</span> led3 = A3;
+<span class="kw">int</span> led4 = A4;
 
-  <span class="kw">float</span> h = dht.<span class="fn">readHumidity</span>();
-  <span class="kw">float</span> t = dht.<span class="fn">readTemperature</span>();
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(led1, OUTPUT);
+  <span class="fn">pinMode</span>(led2, OUTPUT);
+  <span class="fn">pinMode</span>(led3, OUTPUT);
+  <span class="fn">pinMode</span>(led4, OUTPUT);
+ 
+  <span class="fn">digitalWrite</span>(led1, HIGH);
+  <span class="fn">digitalWrite</span>(led2, LOW);
+  <span class="fn">digitalWrite</span>(led3, HIGH);
+  <span class="fn">digitalWrite</span>(led4, LOW);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+}
 
-  <span class="kw">if</span> (<span class="fn">isnan</span>(h) || <span class="fn">isnan</span>(t)) {
-    <span class="type">Serial</span>.<span class="fn">println</span>(<span class="str">"Falha ao ler o sensor DHT!"</span>);
-    <span class="kw">return</span>;
-  }
-
-  <span class="type">Serial</span>.<span class="fn">print</span>(<span class="str">"Umidade: "</span>);
-  <span class="type">Serial</span>.<span class="fn">print</span>(h);
-  <span class="type">Serial</span>.<span class="fn">print</span>(<span class="str">"%  Temp: "</span>);
-  <span class="type">Serial</span>.<span class="fn">print</span>(t);
-  <span class="type">Serial</span>.<span class="fn">println</span>(<span class="str">"°C"</span>);
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">digitalWrite</span>(led1, HIGH);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(led2, LOW);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(led3, HIGH);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(led4, LOW);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(led1, LOW);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(led2, HIGH);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(led3, LOW);
+  <span class="fn">delay</span>(<span class="num">500</span>);
+  <span class="fn">digitalWrite</span>(led4, HIGH);
+  <span class="fn">delay</span>(<span class="num">500</span>);
 }`
             }
         ];
