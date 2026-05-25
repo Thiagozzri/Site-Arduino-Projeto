@@ -111,15 +111,32 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #00979D;
         }
-        
+
         /* Highlight simplificado para o código */
-        .kw { color: #569CD6; }
-        .fn { color: #DCDCAA; }
-        .str { color: #CE9178; }
-        .com { color: #6A9955; }
-        .num { color: #B5CEA8; }
-        .type { color: #4EC9B0; }
-        
+        .kw {
+            color: #569CD6;
+        }
+
+        .fn {
+            color: #DCDCAA;
+        }
+
+        .str {
+            color: #CE9178;
+        }
+
+        .com {
+            color: #6A9955;
+        }
+
+        .num {
+            color: #B5CEA8;
+        }
+
+        .type {
+            color: #4EC9B0;
+        }
+
         /* Imagens Responsivas e Tematizadas */
         .card-image {
             width: 100%;
@@ -131,7 +148,7 @@
             background-color: #0B1120;
             transition: border-color 0.3s;
         }
-        
+
         .hover\:border-primary:hover .card-image {
             border-color: #00979D;
         }
@@ -175,13 +192,22 @@
                 </h2>
                 <div class="space-y-4 text-slate-300 leading-relaxed text-lg">
                     <p>
-                        O Arduino é uma plataforma de prototipagem eletrônica de código aberto (<em>open-source</em>) que revolucionou o mundo do movimento <em>Maker</em>. Ele é composto por um hardware robusto e flexível — como a clássica placa Uno — e um software muito acessível, permitindo que iniciantes e profissionais desenvolvam projetos interativos com extrema facilidade.
+                        O Arduino é uma plataforma de prototipagem eletrônica de código aberto (<em>open-source</em>)
+                        que revolucionou o mundo do movimento <em>Maker</em>. Ele é composto por um hardware robusto e
+                        flexível — como a clássica placa Uno — e um software muito acessível, permitindo que iniciantes
+                        e profissionais desenvolvam projetos interativos com extrema facilidade.
                     </p>
                     <p>
-                        Na prática, ele atua como o "cérebro" de um projeto. A placa é capaz de ler entradas do mundo real (como luz em um sensor, temperatura do ambiente ou o apertar de um botão) e transformar isso em saídas: girar um motor, acionar um relé ou exibir um texto em um display. A inteligência disso tudo é definida por você escrevendo um código na linguagem C++.
+                        Na prática, ele atua como o "cérebro" de um projeto. A placa é capaz de ler entradas do mundo
+                        real (como luz em um sensor, temperatura do ambiente ou o apertar de um botão) e transformar
+                        isso em saídas: girar um motor, acionar um relé ou exibir um texto em um display. A inteligência
+                        disso tudo é definida por você escrevendo um código na linguagem C++.
                     </p>
                     <p>
-                        Graças à sua imensa comunidade, as possibilidades de criação são virtualmente infinitas! Você pode construir desde <strong>robôs seguidores de linha</strong> e estações meteorológicas, até sistemas completos de <strong>automação residencial</strong> para controlar as luzes e aparelhos da sua casa diretamente pelo celular.
+                        Graças à sua imensa comunidade, as possibilidades de criação são virtualmente infinitas! Você
+                        pode construir desde <strong>robôs seguidores de linha</strong> e estações meteorológicas, até
+                        sistemas completos de <strong>automação residencial</strong> para controlar as luzes e aparelhos
+                        da sua casa diretamente pelo celular.
                     </p>
                 </div>
             </div>
@@ -200,7 +226,7 @@
                 <h2 class="text-3xl font-bold">Placas & Microcontroladores</h2>
                 <p class="text-slate-400 font-mono text-sm">Do Arduino básico aos poderosos ESPs.</p>
             </div>
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="boards-container">
                 <!-- Preenchido via JS -->
             </div>
@@ -455,6 +481,40 @@
   <span class="fn">digitalWrite</span>(led4, HIGH);
   <span class="fn">delay</span>(<span class="num">500</span>);
 }`
+            },
+            {
+                title: "Controle de LEDs via Serial",
+                desc: "Permite acender e apagar quatro LEDs individualmente enviando comandos de caracteres pela comunicação Serial ('1' a '4' para ligar, e 'a' a 'd' para desligar).",
+                filename: "controle_leds_serial.ino",
+                code: `<span class="kw">int</span> led1 = A1;
+<span class="kw">int</span> led2 = A2;
+<span class="kw">int</span> led3 = A3;
+<span class="kw">int</span> led4 = A4;
+<span class="kw">char</span> comando;
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">pinMode</span>(led1, OUTPUT);
+  <span class="fn">pinMode</span>(led2, OUTPUT);
+  <span class="fn">pinMode</span>(led3, OUTPUT);
+  <span class="fn">pinMode</span>(led4, OUTPUT);
+  Serial.<span class="fn">begin</span>(<span class="num">9600</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="kw">if</span> (Serial.<span class="fn">available</span>() &gt; <span class="num">0</span>) {
+    comando = Serial.<span class="fn">read</span>();
+    <span class="kw">switch</span> (comando) {
+      <span class="kw">case</span> <span class="str">'1'</span>: <span class="fn">digitalWrite</span>(led1, HIGH); <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'2'</span>: <span class="fn">digitalWrite</span>(led2, HIGH); <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'3'</span>: <span class="fn">digitalWrite</span>(led3, HIGH); <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'4'</span>: <span class="fn">digitalWrite</span>(led4, HIGH); <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'a'</span>: <span class="fn">digitalWrite</span>(led1, LOW); <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'b'</span>: <span class="fn">digitalWrite</span>(led2, LOW); <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'c'</span>: <span class="fn">digitalWrite</span>(led3, LOW); <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'d'</span>: <span class="fn">digitalWrite</span>(led4, LOW); <span class="kw">break</span>;
+    }
+  }
+}`
             }
         ];
 
@@ -552,9 +612,9 @@
                     : '<span class="px-2 py-1 rounded bg-blue-900/50 text-blue-400">3.3V</span>';
 
                 let levelColor = "text-slate-300";
-                if(b.level === "Iniciante") levelColor = "text-green-400";
-                if(b.level === "Intermediário") levelColor = "text-yellow-400";
-                if(b.level === "Avançado") levelColor = "text-red-400";
+                if (b.level === "Iniciante") levelColor = "text-green-400";
+                if (b.level === "Intermediário") levelColor = "text-yellow-400";
+                if (b.level === "Avançado") levelColor = "text-red-400";
 
                 return `
         <div class="bg-pcb-base border border-pcb-trace rounded-lg p-6 hover:border-primary transition-colors flex flex-col">
@@ -643,7 +703,7 @@
             // Pegamos o texto puro, removendo as tags de span do highlight
             const codeElement = document.getElementById(`code-content-${idx}`);
             const code = codeElement.innerText;
-            
+
             navigator.clipboard.writeText(code).then(() => {
                 const btn = document.getElementById(`btn-copy-${idx}`);
                 btn.innerText = 'Copiado!';
